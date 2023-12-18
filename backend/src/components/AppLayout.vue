@@ -1,5 +1,5 @@
 <template>
-    <div class="flex min-h-full bg-gray-300">
+    <div v-if="currentUser.id" class="flex min-h-full bg-gray-300">
 
         <!-- sidebar -->
        <Sidebar :class="{'-ml-[200px]': ! sidebarOpened}"/>
@@ -12,7 +12,7 @@
             <!-- Content -->
             <main class="p-6">
                 <div class="p-4 rounded bg-white">
-                    <router-view></router-view>
+                    <router-view ></router-view>
                 </div>
             </main>
 
@@ -23,12 +23,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import Sidebar  from '../components/Sidebar.vue'
 import Navbar from './Navbar.vue';
+import store from '../store';
 
+const {title} =defineProps({
+    title:String
+})
 
 const sidebarOpened=ref(true);
+const currentUser = computed(()=> store.state.user.data);
 
 function toggleSidebar(){
     sidebarOpened.value = !sidebarOpened.value;
@@ -37,6 +42,8 @@ function toggleSidebar(){
 
 //Hooks
 onMounted(()=>{
+    store.dispatch('getUser');
+
     handleSidebarOpened();
     window.addEventListener('resize',handleSidebarOpened)
 });
